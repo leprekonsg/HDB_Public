@@ -1,12 +1,13 @@
 The EDA python note book contains the EDA for the analysis. Some data wrangling was done to ensure trailing space do not create additional category. There were also normalization or scaling done when comparing income against flat prices.
 
-    
+
+First we plot out the mix/max selling price of BTO flats over the years
 ![png](output_6_0.png)
     
 
 
 
-
+We also look at the prices categorised by room types
     
 ![png](output_7_0.png)
     
@@ -15,111 +16,24 @@ The EDA python note book contains the EDA for the analysis. Some data wrangling 
 
 
 
-    
-![png](output_8_0.png)
-    
 
-
-    
-
-
-    
-![png](output_13_1.png)
-    
-
-
-
-```python
-# Plot Median Resale Prices Over the Years
-fig = plt.figure(figsize=(14,4.5))
-fig.suptitle('HDB Resale Prices Over the Years', fontsize=18)
-ax1 = fig.add_subplot(121)
-
-# Plot median resale price
-df_prices.groupby('month')[['resale_price']].median().plot(ax=ax1, color='#00cef6', label='Median')
-ax1.set_ylabel('Resale Price in SGD ($)')
-
-# Plot mean resale price
-df_prices.groupby('month')[['resale_price']].mean().plot(ax=ax1, color='#ff5733', label='Mean')
-ax1.legend(labels=['Median', 'Mean'])
-
-ax1.set_xlabel('Date'), ax1.set_ylim(0, 600000), ax1.set_title('Unadjusted for Inflation', size=15)
-
-# Adjusted
-# https://jakevdp.github.io/PythonDataScienceHandbook/04.09-text-and-annotation.html
-ax2 = fig.add_subplot(122)
-df_prices.groupby('month')[['real_price']].mean().plot(ax=ax2, color='#3c78d8', legend=None)
-ax2.set_xlabel('Date'), ax2.set_ylabel('Resale Price in SGD ($)'), ax2.set_ylim(0, 600000), ax2.set_title('Adjusted for Inflation based on 2019 base',size=15)
-ax2.annotate('2013 Cooling Measures', xy=('2013-07-01',380000), xycoords='data', 
-    bbox=dict(boxstyle="round4,pad=.5", fc="none", ec="#28324a"), xytext=(0,-90), textcoords='offset points', ha='center',
-    arrowprops=dict(arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=20"))
- 
-ax2.annotate('2023 Cooling\n Measures', xy=('2023-05-01',420000), xycoords='data', 
-    bbox=dict(boxstyle="round4,pad=.5", fc="none", ec="#28324a"), xytext=(0,-90), textcoords='offset points', ha='center',
-    arrowprops=dict(arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=20"))  
-plt.tight_layout(rect=[0, 0, 0.9, 0.9]) 
-
-plt.show()
-
-```
-
-    C:\Users\LAIW0\AppData\Roaming\Python\Python39\site-packages\matplotlib\patches.py:2867: RuntimeWarning: divide by zero encountered in double_scalars
-      f1 = self.rad / d1
-    C:\Users\LAIW0\AppData\Roaming\Python\Python39\site-packages\matplotlib\patches.py:2871: RuntimeWarning: invalid value encountered in double_scalars
-      vertices.extend([(cx + dx1 * f1, cy + dy1 * f1),
-    
-
-
+Then we looked at resale prices unadjusted and adjusted for CPI (notice the the price for earlier years increased due to the base year being in 2019)
     
 ![png](output_14_1.png)
     
 
 
 
-```python
-fig = plt.figure(figsize=(14,4.5))
-fig.suptitle('Mean BTO vs Mean Resale Prices Over the Years', fontsize=18)
-ax1 = fig.add_subplot(121)
-# Create a new column 'average_selling_price' as the average of 'min_selling_price' and 'max_selling_price'
-df['average_selling_price'] = (df['min_selling_price'] + df['max_selling_price']) / 2
 
-# Calculate the average price for each year
-yearly_avg_prices = df.groupby('financial_year')['average_selling_price'].mean().plot(ax=ax1, color='#00cef6', label='Mean BTO selling prices')
-ax1.set_xlabel('Date'), ax1.set_ylabel('BTO Price in SGD ($)'), ax1.set_ylim(0, 600000), ax1.set_title('Mean BTO selling prices',size=15)
-ax2 = fig.add_subplot(122)
-df_prices.groupby('month')[['resale_price']].mean().plot(ax=ax2, color='#3c78d8', legend=None)
-ax2.set_xlabel('Date'), ax2.set_ylabel('Resale Price in SGD ($)'), ax2.set_ylim(0, 600000), ax2.set_title('Unadjusted mean Resale selling price',size=15)
 
-ax2.annotate('AHG Introduced', xy=('2006-03-01',200000), xycoords='data', 
-    bbox=dict(boxstyle="round4,pad=.5", fc="none", ec="#28324a"), xytext=(0,-90), textcoords='offset points', ha='center',
-    arrowprops=dict(arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=20"))
-ax2.annotate('PHG Introduced', xy=('2015-08-01',380000), xycoords='data', 
-    bbox=dict(boxstyle="round4,pad=.5", fc="none", ec="#28324a"), xytext=(0,-90), textcoords='offset points', ha='center',
-    arrowprops=dict(arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=20"))
-ax2.annotate('EHG Introduced', xy=('2019-09-01',300000), xycoords='data', 
-    bbox=dict(boxstyle="round4,pad=.5", fc="none", ec="#28324a"), xytext=(0,-90), textcoords='offset points', ha='center',
-    arrowprops=dict(arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=20"))  
-ax2.annotate('CHG \nincrease', xy=('2023-02-01',480000), xycoords='data', 
-    bbox=dict(boxstyle="round4,pad=.5", fc="none", ec="#28324a"), xytext=(0,-90), textcoords='offset points', ha='center',
-    arrowprops=dict(arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=20"))  
-plt.tight_layout(rect=[0, 0, 0.9, 0.9]) 
-
-plt.show()
-```
-
-    C:\Users\LAIW0\AppData\Roaming\Python\Python39\site-packages\matplotlib\patches.py:2867: RuntimeWarning: divide by zero encountered in double_scalars
-      f1 = self.rad / d1
-    C:\Users\LAIW0\AppData\Roaming\Python\Python39\site-packages\matplotlib\patches.py:2871: RuntimeWarning: invalid value encountered in double_scalars
-      vertices.extend([(cx + dx1 * f1, cy + dy1 * f1),
     
 
-
+We can see the grant introduction precedes most of the price inceases in HDB resale flats. This could be due to excellent policy foresight or that the market is actually pricing in the grants and raising prices knowing the buyers would be ready to pay more.
+ 
     
 ![png](output_15_1.png)
 
-We can see the grant introduction precedes most of the price inceases in HDB resale flats. This could be due to excellent policy foresight or that the market is actually pricing in the grants and raising prices knowing the buyers would be ready to pay more.
 
-    
 ![png](output_17_1.png)
     
 
